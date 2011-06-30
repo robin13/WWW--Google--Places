@@ -1,0 +1,30 @@
+---
+abstract: 'Interface to Google Places API.'
+author:
+  - 'Mohammad S Anwar <mohammad.anwar@yahoo.com>'
+build_requires:
+  HTTP::Request: 1.40
+  JSON: 2.15
+  LWP::UserAgent: 2.33
+  Moose: 2.0006
+  Moose::Util::TypeConstraints: 2.0006
+  MooseX::Params::Validate: 0.16
+  Readonly: 0
+  Test::More: 0
+  URI::Escape: 3.29
+  namespace::clean: 0.20
+configure_requires:
+  Module::Build: 0.36
+generated_by: 'Module::Build version 0.3607'
+license: perl
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
+name: WWW-Google-Places
+provides:
+  WWW::Google::Places:
+    file: lib/WWW/Google/Places.pm
+    version: 0.03
+resources:
+  license: http://dev.perl.org/licenses/
+version: 0.03

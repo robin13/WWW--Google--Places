@@ -1,0 +1,44 @@
+This file contains message digests of all files listed in MANIFEST,
+signed via the Module::Signature module, version 0.66.
+
+To verify the content in this distribution, first make sure you have
+Module::Signature installed, then type:
+
+    % cpansign -v
+
+It will check each file's integrity, as well as the signature's
+validity.  If "==> Signature verified OK! <==" is not displayed,
+the distribution may already have been compromised, and you should
+not run its Makefile.PL or Build.PL.
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+SHA1 ca89693a7f779f0ac0d8f5c3cdb5f3bccdd4902a Build.PL
+SHA1 8301a7e901d9bdb004e71eb2e3d71ccf82fa4616 Changes
+SHA1 6284393ee6d346123de553019a5d545e85107b43 MANIFEST
+SHA1 7d20e4e840781030202bb045d5ab81b3fd1b68b0 MANIFEST.SKIP
+SHA1 f6e3f1f34e9405b98422632f7e5e768fe5af861a META.yml
+SHA1 cd6dbc0005fc1f872b0fccf620c7adb29fa68472 Makefile.PL
+SHA1 a19c08816abae6da0f36f3077a08bdd3d3f3a5e0 README
+SHA1 829e996c14f1842bf3ef916334d178a5367d3c9a lib/WWW/Google/Places.pm
+SHA1 55cfd5a57ea8e4ac60f76d36d4ab4cb3f6c65aee t/00-load.t
+SHA1 e1e80713f41a9ecf6ab4aa3fbceaa5e974606521 t/01-new.t
+SHA1 dd29ccd2a71ad02a4ac7597df66ff915788c35a9 t/02-search_place.t
+SHA1 671505e10a5723a3764d10d2f68846aefb440bfd t/03-place_detail.t
+SHA1 237ce4492b839ff7fe549848cf4eee0234e662b0 t/04-place_checkins.t
+SHA1 ee80e13557c3d636f892a4f1f4a7aec293c8c984 t/05-add_place.t
+SHA1 23663dd0feaac6be55653fc3fd0b859a46e03c6a t/06-delete_place.t
+SHA1 2b8ffb7e4f399af95d092743846ac8d438f2c53e t/manifest.t
+SHA1 0765c9ff0cc4319f415bb08d0053b7717a8284a2 t/pod.t
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.14 (MingW32)
+
+iQEcBAEBAgAGBQJN1BfRAAoJEPYcXBXhRYOhxfgH/jb7jE/eVwpo2DbK0lx177XZ
+hTdBKGYM+oqGIsuhn9GUFVQjPnatbU+IYa7a8vr5J/H6t4ycvWOw2nIrw15sp8L9
+SEYc12Sp9T89L5JrPakSOnnm2+c/Xm/aP+R50ykSNssJ9s00nrQ6nn/K+SP4hLm4
+aQi0c5adUHI1N319U3kmmmoSYx08hx2iTMRTbTM3pz7LALZ5UVcZzEkhDaU21zOx
+S612XJcmSWewjbvQd0nNrhjMkM/qdkIeRLkBzJ8SkXK33tOonvddvad9H8iG8l+Z
+R0FOM5UhNPxPF887e3LiMt3wfaKifmuPM3uwI0BhfYPMmmshsEa3/sLXQlLZC/I=
+=3Dhm
+-----END PGP SIGNATURE-----

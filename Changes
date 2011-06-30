@@ -1,0 +1,12 @@
+Revision history for WWW-Google-Places
+
+0.03    Wed May 18 20:00:00 2011
+        - Updated text for "LICENSE AND COPYRIGHT".
+
+0.02    Mon May 16 13:09:00 2011
+        - Updated the CONSTRUCTOR logic, so that it can now accept the api_key and sensor param 
+          as list i.e new($api_key, $sensor) as well.
+        - Minor pod changes.
+
+0.01    Mon May 16 11:30:01 2011
+        - First version, released.
