@@ -1,5 +1,14 @@
 Revision history for WWW-Google-Places
 
+0.04
+        - Made base_url a ro attribute so that it can be redefined on initialisation.
+          This can be useful if you are tunneling through a firewall to access the API
+        - Removed "type" (json or xml) because it is always parsed before returning
+          to user as a perl data structure, so better to just do one data format
+          than try to support two.
+          In addition using xml type caused errors because whatever the result,
+          it was parsed as if json.
+
 0.03    Wed May 18 20:00:00 2011
         - Updated text for "LICENSE AND COPYRIGHT".
 

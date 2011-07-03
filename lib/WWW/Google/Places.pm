@@ -19,12 +19,12 @@ WWW::Google::Places - Interface to Google Places API.
 
 =head1 VERSION
 
-Version 0.03
+Version 0.04
 
 =cut
 
-our $VERSION = '0.03';
-Readonly my $BASE_URL => 'https://maps.googleapis.com/maps/api/place';
+our $VERSION = '0.04';
+
 Readonly my $LANGUAGE =>
 {
     'ar'    => 1,
@@ -465,13 +465,15 @@ type 'Place'        => where { my @types;
                                &&
                                (map { exists($PLACE_TYPE->{lc($_)}) } @types )
                              };
-type 'OutputFormat' => where { $_ =~ m(^\bjson\b|\bxml\b$)i };
+
 type 'Language'     => where { exists($LANGUAGE->{lc($_)}) };
 type 'TrueFalse'    => where { defined($_) && ($_ =~ m(^\btrue\b|\bfalse\b$)i) };
+
+has 'base_url' => ( is => 'ro', 'isa' => 'Str', 'required' => 1, default => 'https://maps.googleapis.com/maps/api/place' );
+
 has  'api_key'      => (is => 'ro', isa => 'Str',       required => 1);
 has  'sensor'       => (is => 'ro', isa => 'TrueFalse', required => 1);
 has  'browser'      => (is => 'rw', isa => 'LWP::UserAgent', default => sub { return LWP::UserAgent->new(); });
-has  'output'       => (is => 'ro', isa => 'OutputFormat',   default => 'json');
 has  'language'     => (is => 'ro', isa => 'Language',       default => 'en');
 
 around BUILDARGS => sub
@@ -508,7 +510,6 @@ for FREE from Google.
     |           | either true or false. This must be provided.                                         |
     | language  | The language code, indicating in which language the results should be returned. The  |
     |           | default is en.                                                                       |
-    | output    | Output format JSON or XML. Default is JSON.                                          |
     +-----------+--------------------------------------------------------------------------------------+
 
     use strict; use warnings;
@@ -522,7 +523,7 @@ for FREE from Google.
     # or
     $google  = WWW::Google::Places->new({'api_key'=>$api_key, sensor=>$sensor});
     # or
-    $google  = WWW::Google::Places->new({'api_key'=>$api_key, sensor=>$sensor, language=>'en', output=>'json'});
+    $google  = WWW::Google::Places->new({'api_key'=>$api_key, sensor=>$sensor, language=>'en' });
 
 =head1 METHODS
 
@@ -568,7 +569,7 @@ sub search_place
 
     my ($browser, $url, $request, $response, $content);
     $browser = $self->browser;
-    $url     = sprintf("%s/search/%s?key=%s", $BASE_URL, $self->output, $self->api_key);
+    $url     = sprintf("%s/search/json?key=%s", $self->base_url, $self->api_key);
     $url .= sprintf("&location=%s", $param{'location'});
     $url .= sprintf("&radius=%d",   $param{'radius'});
     $url .= sprintf("&sensor=%s",   $self->sensor);
@@ -617,7 +618,7 @@ sub place_detail
 
     my ($browser, $url, $request, $response, $content);
     $browser = $self->browser;
-    $url     = sprintf("%s/details/%s?key=%s", $BASE_URL, $self->output, $self->api_key);
+    $url     = sprintf("%s/details/json?key=%s", $self->base_url, $self->api_key);
     $url .= sprintf("&reference=%s", $reference);
     $url .= sprintf("&sensor=%s",    $self->sensor);
     $url .= sprintf("&language=%s",  $self->language);
@@ -665,7 +666,7 @@ sub place_checkins
 
     my ($browser, $url, $request, $response, $content);
     $browser  = $self->browser;
-    $url      = sprintf("%s/check-in/%s?key=%s", $BASE_URL, $self->output, $self->api_key);
+    $url      = sprintf("%s/check-in/json?key=%s", $self->base_url, $self->api_key);
     $url .= sprintf("&reference=%s", $reference);
     $url .= sprintf("&sensor=%s",    $self->sensor);
     $request  = HTTP::Request->new(GET => $url);
@@ -717,34 +718,20 @@ sub add_place
     my ($data, $lat, $lng);
     my ($browser, $url, $request, $response, $content);
     $browser = $self->browser;
-    $url     = sprintf("%s/add/%s?key=%s&sensor=%s", $BASE_URL, $self->output, $self->api_key, $self->sensor);
+    $url     = sprintf("%s/add/json?key=%s&sensor=%s", $self->base_url, $self->api_key, $self->sensor);
     ($lat, $lng) = split /\,/,$param{'location'};
 
     $request  = HTTP::Request->new(POST => $url);
     $request->header('Host' => 'maps.googleapis.com');
-    if ($self->output =~ /xml/i)
-    {
-        $data = '<?xml version="1.0" encoding="UTF-8"?>';
-        $data.= '<PlaceAddRequest>';
-        $data.= '<location><lat>' . $lat . '</lat><lng>' . $lng . '</lng></location>';
-        $data.= '<accuracy>' . $param{'accuracy'} . '</accuracy>';
-        $data.= '<name>'     . $param{'name'}     . '</name>';
-        $data.= '<type>'     . $param{'types'}    . '</type>' if defined($param{'types'});
-        $data.= '<language>' . $self->language    . '</language>';
-        $data.= '</PlaceAddRequest>';
-        $request->content($data);
-    }
-    else
-    {
-        # We handle number this way as JSON expects  number to be treated  as number and 
-        # not number within single/double quotes. Spent one whole day to figure this out.
-        $data = {'location' => {'lat' => _handle_number($lat), 'lng' => _handle_number($lng)},
-                 'accuracy' => _handle_number($param{'accuracy'}),
-                 'name'     => $param{'name'},
-                 'language' => $self->language};
-        $data->{'types'} = [$param{'types'}] if defined($param{'types'});
-        $request->content(to_json($data));
-    }
+
+    # We handle number this way as JSON expects  number to be treated  as number and 
+    # not number within single/double quotes. Spent one whole day to figure this out.
+    $data = {'location' => {'lat' => _handle_number($lat), 'lng' => _handle_number($lng)},
+        'accuracy' => _handle_number($param{'accuracy'}),
+        'name'     => $param{'name'},
+        'language' => $self->language};
+    $data->{'types'} = [$param{'types'}] if defined($param{'types'});
+    $request->content(to_json($data));
 
     $response = $browser->request($request);
     croak("ERROR: Couldn't fetch data [$url]:[".$response->status_line."]\n")
@@ -752,7 +739,6 @@ sub add_place
     $content  = $response->content;
     croak("ERROR: No data found.\n") unless defined $content;
     
-    return $content if ($self->output =~ /xml/i);
     return from_json($content);
 }
 
@@ -791,29 +777,18 @@ sub delete_place
 
     my ($browser, $url, $request, $response, $content, $data);
     $browser  = $self->browser;
-    $url      = sprintf("%s/delete/%s?key=%s&sensor=%s", $BASE_URL, $self->output, $self->api_key, $self->sensor);
+    $url      = sprintf("%s/delete/json?key=%s&sensor=%s", $self->base_url, $self->api_key, $self->sensor);
     $request  = HTTP::Request->new(POST => $url);
     $request->header('Host' => 'maps.googleapis.com');
 
-    if ($self->output =~ /xml/i)
-    {
-        $data = '<?xml version="1.0" encoding="UTF-8"?>';
-        $data.= '<PlaceDeleteRequest>';
-        $data.= '<reference>' . $reference . '</reference>';
-        $data.= '</PlaceDeleteRequest>';
-        $request->content($data);
-    }
-    else
-    {
-        $request->content(to_json({'reference' => $reference}));
-    }
+    $request->content(to_json({'reference' => $reference}));
+    
     $response = $browser->request($request);
     croak("ERROR: Couldn't fetch data [$url]:[".$response->status_line."]\n")
         unless $response->is_success;
     $content  = $response->content;
     croak("ERROR: No data found.\n") unless defined $content;
     
-    return $content if ($self->output =~ /xml/i);
     return from_json($content);
 }
 
@@ -826,6 +801,10 @@ sub _handle_number
 =head1 AUTHOR
 
 Mohammad S Anwar, C<< <mohammad.anwar at yahoo.com> >>
+
+=head1 CONTRIBUTORS
+
+Robin Clarke, C<< <perl at robinclarke.net> >>
 
 =head1 BUGS
 
