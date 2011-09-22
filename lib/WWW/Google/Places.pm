@@ -473,7 +473,7 @@ has 'base_url' => ( is => 'ro', 'isa' => 'Str', 'required' => 1, default => 'htt
 
 has  'api_key'      => (is => 'ro', isa => 'Str',       required => 1);
 has  'sensor'       => (is => 'ro', isa => 'TrueFalse', required => 1);
-has  'browser'      => (is => 'rw', isa => 'LWP::UserAgent', default => sub { return LWP::UserAgent->new(); });
+has  'browser'      => (is => 'rw', isa => 'LWP::UserAgent', default => sub { return LWP::UserAgent->new( keep_alive => 1 ); });
 has  'language'     => (is => 'ro', isa => 'Language',       default => 'en');
 
 around BUILDARGS => sub
